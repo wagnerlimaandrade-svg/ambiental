@@ -25,12 +25,6 @@ find_column <- function(df, candidates, label) {
   found[[1]]
 }
 
-parse_date_safe <- function(x) {
-  out <- ymd(x, quiet = TRUE)
-  if (all(is.na(out))) out <- dmy(x, quiet = TRUE)
-  out
-}
-
 run_transform <- function() {
   alertas <- read_dataset("mapbiomas_alertas.csv", "mapbiomas_alertas_sample.csv")
   clima <- read_dataset("inmet_clima.csv", "inmet_clima_sample.csv")
@@ -39,16 +33,7 @@ run_transform <- function() {
   clima_date_col <- find_column(clima, c("data", "data_medicao", "date"), "data do clima")
 
   alertas <- alertas %>%
-    mutate(
-      ano_mes = floor_date(parse_date_safe(.data[[alerta_date_col]]), "month"),
-      uf = toupper(trimws(uf)),
-      bioma = trimws(bioma),
-      area_ha = as.numeric(area_ha)
-    )
-
-  if (any(is.na(alertas$ano_mes))) stop("Datas de alertas não parseadas (NA).")
-
-  alertas <- alertas %>%
+    mutate(ano_mes = floor_date(ymd(.data[[alerta_date_col]]), "month")) %>%
     group_by(ano_mes, uf, bioma) %>%
     summarise(area_ha = sum(area_ha, na.rm = TRUE), .groups = "drop")
 
@@ -56,27 +41,10 @@ run_transform <- function() {
   temp_col <- find_column(clima, c("temp_c", "temperatura", "temperatura_c"), "temperatura")
 
   clima <- clima %>%
-    mutate(
-      ano_mes = floor_date(parse_date_safe(.data[[clima_date_col]]), "month"),
-      uf = toupper(trimws(uf)),
-      !!precip_col := as.numeric(.data[[precip_col]]),
-      !!temp_col := as.numeric(.data[[temp_col]])
-    )
-
-  if (any(is.na(clima$ano_mes))) stop("Datas de clima não parseadas (NA).")
-
-  gran <- clima %>%
-    count(uf, ano_mes) %>%
-    summarise(p50 = median(n), p90 = quantile(n, 0.9))
-
-  message("Diagnóstico granularidade (linhas por UF/mês): p50=", gran$p50, " p90=", gran$p90)
-
-  many_rows_per_month <- gran$p50 > 1 || gran$p90 > 1
-
-  clima <- clima %>%
+    mutate(ano_mes = floor_date(ymd(.data[[clima_date_col]]), "month")) %>%
     group_by(ano_mes, uf) %>%
     summarise(
-      precip_mm = if (many_rows_per_month) sum(.data[[precip_col]], na.rm = TRUE) else mean(.data[[precip_col]], na.rm = TRUE),
+      precip_mm = sum(.data[[precip_col]], na.rm = TRUE),
       temp_c = mean(.data[[temp_col]], na.rm = TRUE),
       .groups = "drop"
     )
