@@ -1,3 +1,8 @@
+data/raw/
+data/interim/
+data/processed/
+*parquet
+*rds
 .Rproj.user
 .Rhistory
 .RData
