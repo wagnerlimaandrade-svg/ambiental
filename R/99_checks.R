@@ -1,3 +1,6 @@
+source("R/00_setup.R")
+source("R/00_config.R")
+
 stopifnot(file.exists(FILE_ANALYTICAL))
 
 df <- arrow::read_parquet(FILE_ANALYTICAL)

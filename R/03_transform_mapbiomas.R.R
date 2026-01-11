@@ -1,9 +1,6 @@
+source("R/00_setup.R")
 source("R/00_config.R")
 
-library(readr)
-library(dplyr)
-library(lubridate)
-library(janitor)
 
 read_dataset <- function(raw_filename, sample_filename) {
   ensure_dirs(PATH_RAW, PATH_SAMPLE, PATH_PROCESSED)

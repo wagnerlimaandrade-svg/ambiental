@@ -14,4 +14,6 @@ Implementação: R/03_transform.R
 
 -   Início do ciclo diário de trabalho.
 -   Foco: estrutura do projeto, ingestão SEEG e MapBiomas Alerta.
--   DEFININDO ESTRUTURA DO PROJETO
+-   DEFININDO ESTRUTURA DO PROJETO ( setup , config, centralizando libs)
+
+Para proxima etapa: definir " contrato formal" do analitical parquet( colunas, granularidade, decisoes, metodologia) - aba definicao de amostras - GPT
