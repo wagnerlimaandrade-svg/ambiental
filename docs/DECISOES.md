@@ -10,10 +10,17 @@ Justificativa: Evita dupla agregação e mantém coerência física do indicador
 
 Implementação: R/03_transform.R
 
-## 2025-01-11
+## 2026-01-11
 
 -   Início do ciclo diário de trabalho.
 -   Foco: estrutura do projeto, ingestão SEEG e MapBiomas Alerta.
 -   DEFININDO ESTRUTURA DO PROJETO ( setup , config, centralizando libs)
 
-Para proxima etapa: definir " contrato formal" do analitical parquet( colunas, granularidade, decisoes, metodologia) - aba definicao de amostras - GPT
+Para proxima etapa: definir "contrato formal" do analitical parquet( colunas, granularidade, decisoes, metodologia) - aba definicao de amostras - GPT
+ 
+## 2026-01-22
+inicio
+Definir "contrato formal" do analitical parquet( colunas, granularidade, decisões, metodologia) - aba definicao de amostras - GPT
+
+fim
+Apenas definido e estudado em chat: Schema Analitical Project
