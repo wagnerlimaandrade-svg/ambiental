@@ -32,3 +32,8 @@ validate_schema.R (arrow + checks)
 esqueleto do 05_build_analytical.R com joins e invariantes.
 
 OBS: AJUSTAR OS PATHS EM R/05_build_analytical.R
+
+fim:
+Validar projeto - formato e arquivos.
+Ler final da aba: Schema Analytical Project
+importar arquivos e verificar paths, executar passos para permitir que o Shiny leia analytical.parquet
