@@ -26,3 +26,9 @@ fim
 Apenas definido e estudado em chat: Schema Analytical Project
 
 ## 2026-02-01
+inicio: Implementando Schema Analytical
+schema.yml (ou .json) formal
+validate_schema.R (arrow + checks)
+esqueleto do 05_build_analytical.R com joins e invariantes.
+
+OBS: AJUSTAR OS PATHS EM R/05_build_analytical.R
