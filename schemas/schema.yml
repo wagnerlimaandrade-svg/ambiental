@@ -1,0 +1,157 @@
+# schema.yml — contrato do analytical.parquet
+dataset: analytical
+version: "1.0.0"
+description: "Painel mensal por UF×bioma com métricas de desmatamento (MapBiomas Alerta) e clima (INMET)."
+grain:
+  keys: [uf, bioma, ano_mes]
+  note: "1 linha por UF×Bioma×Mês (ano_mes = 1º dia do mês). Clima por UF é replicado por bioma dentro da UF."
+
+primary_key:
+  - uf
+  - bioma
+  - ano_mes
+
+columns:
+  - name: uf
+    type: string
+    required: true
+    description: "Sigla da Unidade Federativa (ex.: SP)."
+
+  - name: bioma
+    type: string
+    required: true
+    description: "Bioma (conforme MapBiomas)."
+
+  - name: ano_mes
+    type: date32
+    required: true
+    description: "Data no primeiro dia do mês (ex.: 2024-03-01)."
+
+  - name: ano
+    type: int32
+    required: true
+    derived: true
+    description: "Ano derivado de ano_mes."
+
+  - name: mes
+    type: int32
+    required: true
+    derived: true
+    description: "Mês (1–12) derivado de ano_mes."
+
+  # --- MapBiomas Alerta (mensal, agregado por UF×bioma×mês) ---
+  - name: alerts_n
+    type: int32
+    required: true
+    description: "Número de alertas no mês."
+    constraints:
+      min: 0
+
+  - name: area_ha
+    type: float64
+    required: true
+    description: "Área total desmatada no mês (hectares)."
+    constraints:
+      min: 0
+
+  - name: area_km2
+    type: float64
+    required: true
+    derived: true
+    description: "Área total (km²) = area_ha / 100."
+    constraints:
+      min: 0
+
+  - name: area_ha_p50_alert
+    type: float64
+    required: false
+    description: "Mediana da área (ha) por alerta no mês."
+    constraints:
+      min: 0
+
+  - name: source_mb_version
+    type: string
+    required: false
+    description: "Versão/snapshot/metadata do insumo MapBiomas usado."
+
+  # --- Clima (mensal por UF×mês; replicado por bioma dentro de UF) ---
+  - name: tmed_c
+    type: float64
+    required: false
+    description: "Temperatura média mensal (°C)."
+
+  - name: tmax_c
+    type: float64
+    required: false
+    description: "Temperatura máxima mensal (°C)."
+
+  - name: tmin_c
+    type: float64
+    required: false
+    description: "Temperatura mínima mensal (°C)."
+
+  - name: precip_mm
+    type: float64
+    required: false
+    description: "Precipitação mensal acumulada (mm)."
+    constraints:
+      min: 0
+
+  - name: rh_mean
+    type: float64
+    required: false
+    description: "Umidade relativa média mensal (%)."
+    constraints:
+      min: 0
+      max: 100
+
+  - name: n_stations
+    type: int32
+    required: false
+    description: "Número de estações usadas na agregação UF×mês."
+    constraints:
+      min: 0
+
+  # --- Qualidade / flags ---
+  - name: clima_granularity
+    type: string
+    required: true
+    description: "Granularidade inferida do clima."
+    allowed_values: ["daily", "monthly", "unknown"]
+
+  - name: clima_coverage
+    type: float64
+    required: false
+    description: "Cobertura (0–1) quando origem diária; NA se mensal/unknown."
+    constraints:
+      min: 0
+      max: 1
+
+  - name: flag_missing_clima
+    type: bool
+    required: true
+    description: "TRUE se variáveis climáticas principais estiverem ausentes."
+
+  - name: flag_missing_deforestation
+    type: bool
+    required: true
+    description: "TRUE se desmatamento estiver ausente (sem insumo) — diferente de zero observado."
+
+invariants:
+  - name: pk_unique
+    rule: "PK (uf, bioma, ano_mes) deve ser única."
+
+  - name: month_bounds
+    rule: "mes deve estar entre 1 e 12."
+
+  - name: non_negative_physical
+    rule: "area_ha >= 0; precip_mm >= 0 quando não-NA; alerts_n >= 0."
+
+  - name: temp_ordering
+    rule: "Quando tmin_c, tmed_c, tmax_c existem: tmin_c <= tmed_c <= tmax_c."
+
+  - name: area_km2_consistency
+    rule: "area_km2 == area_ha / 100 (tolerância numérica)."
+
+  - name: zero_semantics
+    rule: "Se alerts_n == 0 então area_ha deve ser 0 (não NA)."

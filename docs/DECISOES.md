@@ -20,7 +20,9 @@ Para proxima etapa: definir "contrato formal" do analitical parquet( colunas, gr
  
 ## 2026-01-22
 inicio
-Definir "contrato formal" do analitical parquet( colunas, granularidade, decisões, metodologia) - aba definicao de amostras - GPT
+( colunas, granularidade, decisões, metodologia) - aba definicao de amostras - GPT
 
 fim
-Apenas definido e estudado em chat: Schema Analitical Project
+Apenas definido e estudado em chat: Schema Analytical Project
+
+## 2026-02-01
